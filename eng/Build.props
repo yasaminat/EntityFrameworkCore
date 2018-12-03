@@ -1,0 +1,10 @@
+<Project>
+
+  <!-- HACK: Arcade includes *.sln -->
+  <ItemGroup>
+    <ProjectToBuild Remove="$(RepoRoot)EFCore.Runtime.sln" />
+    <ProjectToBuild Remove="$(RepoRoot)EFCore.Cosmos.sln" />
+    <ProjectToBuild Remove="$(RepoRoot)Microsoft.Data.Sqlite.sln" />
+  </ItemGroup>
+
+</Project>

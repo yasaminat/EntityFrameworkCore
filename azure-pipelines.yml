@@ -4,36 +4,38 @@
 
 # Only run CI builds for these branches
 trigger:
-  branches:
-    include:
-    - 'master'
-    - 'release/*'
-    - 'internal/release/*'
+  - master
+  - release/*
+  - internal/release/*
 # Run PR validation on all branches
 pr:
-  branches:
-    include:
-    - '*'
-
-name: $(Date:yyyyMMdd).$(Rev:rr)
+  - *
 
 jobs:
-- template: build/templates/default-build.yml
+- template: eng/common/templates/jobs/jobs.yml
   parameters:
-    agentOs: Windows
-    codeSign: true
-    configuration: Release
-    artifacts:
-      publish: true
-      name: packages
-      path: 'artifacts/build/'
+    jobs:
+      - job: Windows
+        pool: dotnet-external-temp
+        steps:
+        - script: eng\common\cibuild.cmd
+            -prepareMachine
+        name: Build
+        displayName: Build
+        condition: succeeded()
 
-- template: build/templates/default-build.yml
-  parameters:
-    agentOs: macOS
-    configuration: Release
+      - job: macOS
+        pool:
+          name: Hosted macOS
+          vmImage: macOS-10.13
+        steps:
+          - script: eng/common/cibuild.sh
+              --prepareMachine
 
-- template: build/templates/default-build.yml
-  parameters:
-    agentOs: Linux
-    configuration: Release
+      - job: Linux
+        pool:
+          name: Hosted Ubuntu 1604
+          vmImage: ubuntu-16.04
+        steps:
+          - script: eng/common/cibuild.sh
+              --prepareMachine
