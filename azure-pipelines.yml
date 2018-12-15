@@ -20,9 +20,6 @@ jobs:
         steps:
         - script: eng\common\cibuild.cmd
             -prepareMachine
-        name: Build
-        displayName: Build
-        condition: succeeded()
 
       - job: macOS
         pool:
