@@ -1,38 +1,48 @@
-#
-# See https://docs.microsoft.com/en-us/vsts/pipelines/yaml-schema for details
-#
+variables:
+  _BuildConfig: Release
 
-# Only run CI builds for these branches
+resources:
+  containers:
+  - container: LinuxContainer
+    image: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
+
 trigger:
   - master
   - release/*
-  - internal/release/*
-# Run PR validation on all branches
-pr:
-  - '*'
+
+pr: '*'
 
 jobs:
-- template: eng/common/templates/jobs/jobs.yml
-  parameters:
-    jobs:
-      - job: Windows
-        pool: dotnet-external-temp
-        steps:
-        - script: eng\common\cibuild.cmd
-            -prepareMachine
+  - template: eng/common/templates/jobs/jobs.yml
+    parameters:
+      jobs:
+        - job: Windows
+          enablePublishBuildArtifacts: true
+          pool: dotnet-external-temp
+          steps:
+            - script: eng\common\cibuild.cmd
+                -configuration $(_BuildConfig)
+                -prepareMachine
+              name: Build
+              condition: succeeded()
 
-      - job: macOS
-        pool:
-          name: Hosted macOS
-          vmImage: macOS-10.13
-        steps:
-          - script: eng/common/cibuild.sh
-              --prepareMachine
+        - job: macOS
+          enablePublishBuildArtifacts: true
+          pool: Hosted macOS
+          steps:
+            - script: eng/common/cibuild.sh
+                --configuration $(_BuildConfig)
+                --prepareMachine
+              name: Build
+              condition: succeeded()
 
-      - job: Linux
-        pool:
-          name: Hosted Ubuntu 1604
-          vmImage: ubuntu-16.04
-        steps:
-          - script: eng/common/cibuild.sh
-              --prepareMachine
+        - job: Linux
+          enablePublishBuildArtifacts: true
+          pool: Hosted Ubuntu 1604
+          container: LinuxContainer
+          steps:
+            - script: eng/common/cibuild.sh
+                --configuration $(_BuildConfig)
+                --prepareMachine
+              name: Build
+              condition: succeeded()
