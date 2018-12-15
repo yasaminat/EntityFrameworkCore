@@ -10,7 +10,8 @@ trigger:
   - master
   - release/*
 
-pr: '*'
+pr:
+  - '*'
 
 jobs:
   - template: eng/common/templates/jobs/jobs.yml
