@@ -16,9 +16,9 @@ pr:
 jobs:
   - template: eng/common/templates/jobs/jobs.yml
     parameters:
+      enablePublishBuildArtifacts: true
       jobs:
         - job: Windows
-          enablePublishBuildArtifacts: true
           pool: dotnet-external-temp
           steps:
             - script: eng\common\cibuild.cmd
@@ -28,7 +28,6 @@ jobs:
               condition: succeeded()
 
         - job: macOS
-          enablePublishBuildArtifacts: true
           pool: Hosted macOS
           steps:
             - script: eng/common/cibuild.sh
@@ -38,7 +37,6 @@ jobs:
               condition: succeeded()
 
         - job: Linux
-          enablePublishBuildArtifacts: true
           pool: Hosted Ubuntu 1604
           container: LinuxContainer
           steps:
